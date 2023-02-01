@@ -12,10 +12,11 @@ Published under GPLv3 License.
 <meta charset="utf-8" />
 <html lang="en" dir="ltr">
     <head>
-        <title>Skyhawk Flight Instruments Dashboard</title>
+        <title>War Thunder Meters (MiG-21 Model)</title>
         <script src="js/jquery-1.11.3.js"></script>
         <script src="js/d3.min.js"></script>
         <script src="js/jquery.flightindicators.js"></script>
+        <link rel="shortcut icon" href="img/favicon.png" type="image/x-icon" />
         <link
             rel="stylesheet"
             type="text/css"
@@ -31,8 +32,21 @@ Published under GPLv3 License.
     </head>
 
     <body>
+        <!-- <div style="text-align: left; color: white; font-size: 18px">
+            Debug :
+            <div id="debug_speed">Vitesse</div>
+            <div id="debug_altitude">Altitude</div>
+            <div id="debug_pitch">Tangage</div>
+            <div id="debug_roll">Roulis</div>
+            <div id="debug_compass">Boussole</div>
+            <div id="debug_pressure">Pression</div>
+        </div> -->
+
+        <input type="text" id="host" placeholder="Host (default: localhost)" />
+
         <div class="instruments">
-            <div>
+            <div class="g_div">
+                <i id="g_led"></i>
                 <div id="g_meter"></div>
             </div>
             <div>
@@ -52,8 +66,8 @@ Published under GPLv3 License.
         <script type="text/javascript">
             var settings = {
                 off_flag: true,
-                size: 450,
-                showBox: true,
+                size: 370,
+                showBox: false,
                 showScrews: true,
             };
 
@@ -83,17 +97,59 @@ Published under GPLv3 License.
             );
 
             setInterval(function () {
+                var host = document.getElementById("host").value;
+                if (host == "") host = "localhost";
                 $.ajax({
                     type: "GET",
-                    url: "http://192.168.1.22:8111/indicators",
+                    cache: false,
+                    async: true,
+                    url: "http://" + host + ":8111/indicators",
                     success: function (data) {
+                        var speed = data.speed * 3.6;
+                        var altitude = data.altitude_hour;
+                        var compass = data.compass;
+                        console.log(compass);
                         var pitch = -data.aviahorizon_pitch - 2;
                         var roll = data.aviahorizon_roll - 2;
-                        var roll = data.aviahorizon_roll - 2;
-                        var gmeter = data.g_meter;
-                        var compass = data.compass;
-                        var speed = data.speed * 1.944444444;
-                        console.log(speed);
+                        var gmeter = 0;
+                        if (data.g_meter) var gmeter = data.g_meter;
+                        var model = data.type;
+
+                        // document.getElementById("debug_speed").innerHTML =
+                        //     "Vitesse = " + speed + " Km/h";
+                        // document.getElementById("debug_altitude").innerHTML =
+                        //     "Altitude = " + altitude + " m";
+                        // document.getElementById("debug_pitch").innerHTML =
+                        //     "Tangage = " + pitch;
+                        // document.getElementById("debug_roll").innerHTML =
+                        //     "Roulis = " + roll;
+                        // document.getElementById("debug_compass").innerHTML =
+                        //     "Boussole = " + compass + "°";
+                        // document.getElementById("debug_pressure").innerHTML =
+                        //     "Pression = {pressure} Pa";
+
+                        if (gmeter > 9 || gmeter < -3) {
+                            document.getElementById("g_meter").innerHTML =
+                                "G-Meter :" + gmeter.toFixed(1);
+                            document.getElementById("g_meter").style.color =
+                                "red";
+                            document.getElementById("g_led").className =
+                                "led on blink";
+                        } else if (gmeter > 6 || gmeter < -2) {
+                            document.getElementById("g_meter").innerHTML =
+                                "G-Meter :" + gmeter.toFixed(1);
+                            document.getElementById("g_meter").style.color =
+                                "red";
+                            document.getElementById("g_led").className =
+                                "led on";
+                        } else {
+                            document.getElementById("g_meter").innerHTML =
+                                "G-Meter :" + gmeter.toFixed(1);
+                            document.getElementById("g_meter").style.color =
+                                "white";
+                            document.getElementById("g_led").className = "led";
+                        }
+
                         // Airspeed update
                         //airspeed.setAirSpeed(80 * Math.sin(increment/10));
                         airspeed.setAirSpeed(speed);
@@ -101,34 +157,19 @@ Published under GPLv3 License.
                         // Attitude update
                         attitude.setRoll(roll);
                         attitude.setPitch(pitch);
-                        attitude.setILSLocalizer(15 * Math.sin(increment / 30));
-                        attitude.setILSGlideslope(
-                            20 * Math.sin(increment / 30)
-                        );
-
-                        if (gmeter < 6 && gmeter > -2) {
-                            document.getElementById("g_meter").innerHTML =
-                                "G-Meter :" + gmeter.toFixed(1);
-                            document.getElementById("g_meter").style.color =
-                                "white";
-                        } else {
-                            document.getElementById("g_meter").innerHTML =
-                                "G-Meter :" + gmeter.toFixed(1);
-                            document.getElementById("g_meter").style.color =
-                                "red";
-                        }
 
                         // Altimeter update
-                        altimeter.setAltitude(10 * increment);
-                        altimeter.setPressure(
-                            30 + (3 * Math.sin(increment / 50)) / 10
-                        );
-                        increment++;
+                        altimeter.setAltitude(altitude);
+                        pressure =
+                            (30 * (3 * Math.sin((altitude * 3.281) / 50))) / 10;
+                        pressure_inhg = 30 * (3 * Math.sin(altitude / 50));
+                        // console.log(pressure);
+                        altimeter.setPressure(pressure);
 
                         // TC update - note that the TC appears opposite the angle of the attitude indicator, as it mirrors the actual wing up/down position
-                        turn_coordinator.setTurn(
-                            30 * Math.sin(increment / 10) * -1
-                        );
+                        turn_coordinator.setTurn(roll * -1);
+                        ball_increment = (roll + 180) / 380;
+                        // console.log(ball_increment);
                         turn_coordinator.setSlip(ball_increment);
                         if (ball_increment <= 0) ball_right = true;
                         if (ball_increment >= 1) ball_right = false;
@@ -139,7 +180,16 @@ Published under GPLv3 License.
                         heading.setHeading(compass);
                         heading.setBeaconOne(increment * 0.5, true);
                         heading.setBeaconTwo(-increment * 0.75, true);
-
+                    },
+                });
+                $.ajax({
+                    type: "GET",
+                    cache: false,
+                    async: true,
+                    url: "http://" + host + ":8111/state",
+                    success: function (data2) {
+                        var vario = data2["AoA, deg"];
+                        console.log(vario);
                         // Vario update
                         if (increment_vario > 45) clockwise_vario = false;
                         if (increment_vario < -45) clockwise_vario = true;
