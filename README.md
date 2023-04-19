@@ -15,7 +15,7 @@ Les indicateurs actuellement pris en charge sont :
 
 Voici un exemple de vol :
 
-![demo_example](https://raw.githubusercontent.com/uw-ray/Skyhawk-Flight-Instruments/master/docs/dashboard.png "Indicator examples")
+![demo_example](img/test_image.png "Indicator examples")
 
 L'image ci-dessous montre un altimètre zoomé. Les images vectorielles vous permettent de conserver un rendu de haute qualité avec de grands indicateurs.
 
