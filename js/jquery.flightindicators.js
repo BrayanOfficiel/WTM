@@ -64,7 +64,7 @@ Published under GPLv3 License.
             placeholder.each(function () {
                 $(this)
                     .find("div.instrument.airspeed div.airspeed")
-                    .css("transform", "rotate(" + (deg + 90) + "deg)");
+                    .css("transform", "rotate(" + (deg) + "deg)");
             });
         }
 
@@ -83,15 +83,18 @@ Published under GPLv3 License.
                     .find(
                         "div.instrument.attitude div.attitude div.attitude_pitch"
                     )
-                    .css("transform", "translateY(" + pitch * 0.7 + "%)");
+                    .css("transform", "translateY(" + 0 + "px)");
             });
         }
 
         // Attitude - Set roll
         function _setRoll(roll) {
+            if (roll >= 60) roll = 60;
+            if (roll <= -60) roll = -60;
+            
             placeholder.each(function () {
                 $(this)
-                    .find("div.instrument.attitude div.attitude")
+                    .find("div.instrument.attitude div.attitude_roll")
                     .css("transform", "rotate(" + roll + "deg)");
             });
         }
@@ -140,9 +143,17 @@ Published under GPLv3 License.
 
         // Altimeter - Set altitude
         function _setAltitude(altitude) {
-            var hand100 = (altitude / 1000) * 360;
-            var hand1000 = (altitude / 10000) * 360;
-            var hand10000 = (altitude / 100000) * 360;
+            altitude = altitude / 1000;
+            var hand100 = altitude * 360;
+            var hand1000 = altitude;
+            var hand10000 = 0;
+            if (altitude >= 0 && altitude <= 5) hand1000 = altitude / 5 * 56;
+            if (altitude > 5 && altitude <= 10) hand1000 = (altitude - 5) / 5 * 57 + 56;
+            if (altitude > 10 && altitude <= 15) hand1000 = (altitude - 10) / 5 * 58 + 113;
+            if (altitude > 15 && altitude <= 20) hand1000 = (altitude - 15) / 5 * 58 + 171;
+            if (altitude > 20 && altitude <= 25) hand1000 = (altitude - 20) / 5 * 57 + 229;
+            if (altitude > 25 && altitude <= 30) hand1000 = (altitude - 25) / 5 * 56 + 286;
+            if (altitude > 30) hand1000 = 342;
             placeholder.each(function () {
                 $(this)
                     .find("div.instrument.altimeter div.altimeter_hand100")
@@ -152,7 +163,7 @@ Published under GPLv3 License.
                     .css("transform", "rotate(" + hand1000 + "deg)");
                 $(this)
                     .find("div.instrument.altimeter div.altimeter_hand10000")
-                    .css("transform", "rotate(" + hand10000 + "deg)");
+                    .css("transform", "rotate(" + hand1000 + "deg)");
             });
         }
 
@@ -261,7 +272,11 @@ Published under GPLv3 License.
                             path.getTotalLength() * slip
                         );
                         $(this)
-                            .find("div.instrument.turn div.turn_ball")
+                            .find(".turn_ball")
+                            .css(
+                                "transform",
+                                "scale(0.5)"
+                            )
                             .css(
                                 "transform",
                                 "translate(" +
@@ -360,6 +375,8 @@ Published under GPLv3 License.
                 $(this).find(".indicator_inner").toggle(toggle);
             });
         }
+        
+        var model = document.getElementById("model").value;
 
         // Creation of the instrument
         placeholder.each(function () {
@@ -370,13 +387,12 @@ Published under GPLv3 License.
                             settings.img_directory +
                             'indicator_background_dashboard.svg" class="box" alt="" /></div><div class="indicator_background_screws"><img src="' +
                             settings.img_directory +
-                            'indicator_background_screws.svg" class="box" alt="" /></div><div class="indicator_inner"><div class="airspeed_trueairspeed"><img src="' +
-                            settings.img_directory +
-                            'airspeed_trueairspeed.svg" class="box" alt="" /></div><div class="airspeed_markings"><img src="' +
-                            settings.img_directory + settings.model +
-                            '_markings.png" class="box" alt="" /></div><div class="airspeed box"><img src="' +
-                            settings.img_directory + settings.model +
-                            '_hand.svg" class="box" alt="" /></div></div><div class="indicator_foreground"><img src="' +
+                            'indicator_background_screws.svg" class="box" alt="" /></div><div class="indicator_inner">' +
+                            '<div class="airspeed_markings"><img src="' +
+                            settings.img_directory + model +
+                            '_airspeed_markings.png" class="box" alt="" /></div><div class="airspeed box"><img src="' +
+                            settings.img_directory + model +
+                            '_hand.png" class="box" alt="" /></div></div><div class="indicator_foreground"><img src="' +
                             settings.img_directory +
                             'indicator_foreground.svg" class="box" alt="" /></div></div>'
                     );
@@ -388,23 +404,21 @@ Published under GPLv3 License.
                     $(this).html(
                         '<div class="instrument attitude"><div class="indicator_background"><img src="' +
                             settings.img_directory +
-                            'indicator_background_dashboard.svg" class="box" alt="" /></div><div class="indicator_background_screws"><img src="' +
+                            'indicator_background_dashboard2.png" class="box" style="z-index: 2" alt="" /></div><div class="indicator_background_screws"><img src="'+
                             settings.img_directory +
-                            'indicator_background_screws.svg" class="box" alt="" /></div><div class="indicator_inner"><div class="attitude box"><img src="' +
+                            'indicator_background_screws.svg" class="box" alt="" /></div><div class="indicator_inner"><div class="attitude box"><div class="attitude_pitch box"><img src="' +
                             settings.img_directory +
-                            'attitude_roll_1.svg" class="box" alt="" /><div class="attitude_pitch box"><img src="' +
+                            'pitch.png" class="box" style="height: 900px !important" alt="" /></div><div class="attitude_roll box"><img src="' +
                             settings.img_directory +
-                            'attitude_pitch.svg" class="box" alt="" /></div><img src="' +
+                            'roll.png" class="box" alt="" /></div></div></div>'+
+                            '<div class="attitude_foreground_2"><img src="' +
                             settings.img_directory +
-                            'attitude_roll_2.svg" class="box" alt="" /></div><div class="attitude_foreground_1"><img src="' +
+                            'ekt_box.png" class="box" alt="" /></div><div class="attitude_off_flag"></div></div><div class="indicator_foreground"><img src="' +
                             settings.img_directory +
-                            'attitude_foreground_1.svg" class="box" alt="" /></div></div><div class="attitude_foreground_2"><img src="' +
+                            'turn_ball.svg" class="box turn_ball" alt="" /><img src="' +
                             settings.img_directory +
-                            'attitude_foreground_2.svg" class="box" alt="" /></div><div class="attitude_off_flag"><img src="' +
-                            settings.img_directory +
-                            'attitude_off_flag.svg" class="box" alt="" /></div></div><div class="indicator_foreground"><img src="' +
-                            settings.img_directory +
-                            'indicator_foreground.svg" class="box" alt="" /></div></div>'
+                            'indicator_foreground.svg" class="box" alt="" /></div>'+
+                            '</div>'
                     );
                     _setRoll(settings.roll);
                     _setPitch(settings.pitch);
@@ -416,27 +430,55 @@ Published under GPLv3 License.
 
                 case "altimeter":
                     $(this).html(
-                        '<div class="instrument altimeter"><div class="indicator_background"><img src="' +
-                            settings.img_directory +
-                            'indicator_background_dashboard.svg" class="box" alt="" /></div><div class="indicator_background_screws"><img src="' +
-                            settings.img_directory +
-                            'indicator_background_screws.svg" class="box" alt="" /></div><div class="indicator_inner"><div class="altimeter_pressureinhg box"><img src="' +
-                            settings.img_directory +
-                            'altimeter_pressure_inhg.svg" class="box" alt="" /></div><div class="altimeter_pressurembar box"><img src="' +
-                            settings.img_directory +
-                            'altimeter_pressure_mbar.svg" class="box" alt="" /></div><div class="altimeter_background box"><img src="' +
-                            settings.img_directory +
-                            'altimeter_background.svg" class="box" alt="" /></div><div class="altimeter_hand10000 box"><img src="' +
-                            settings.img_directory +
-                            'altimeter_hand_10000ft.svg" class="box" alt="" /></div><div class="altimeter_foreground box"><img src="' +
-                            settings.img_directory +
-                            'altimeter_foreground.svg" class="box" alt="" /></div><div class="altimeter_hand1000 box"><img src="' +
-                            settings.img_directory +
-                            'altimeter_hand_1000ft.svg" class="box" alt="" /></div><div class="altimeter_hand100 box"><img src="' +
-                            settings.img_directory +
-                            'altimeter_hand_100ft.svg" class="box" alt="" /></div></div><div class="indicator_foreground"><img src="' +
-                            settings.img_directory +
-                            'indicator_foreground.svg" class="box" alt="" /></div></div>'
+                        '<div class="instrument altimeter">' +
+                            '<div class="indicator_background">' +
+                                '<img src="' +
+                                settings.img_directory +
+                                'indicator_background_dashboard.svg" class="box" alt="" />' +
+                            '</div>' +
+                            '<div class="indicator_background_screws">' +
+                                '<img src="' +
+                                settings.img_directory +
+                                'indicator_background_screws.svg" class="box" alt="" />' +
+                            '</div>' +
+                            '<div class="indicator_inner">'+
+                                // '<div class="altimeter_pressureinhg box">'+
+                                //     '<img src="' +
+                                //     settings.img_directory +
+                                //     'altimeter_pressure_inhg.svg" class="box" alt="" />'+
+                                // '</div>' +
+                                // '<div class="altimeter_pressurembar box">'+
+                                //     '<img src="' +
+                                //     settings.img_directory +
+                                //     'altimeter_pressure_mbar.svg" class="box" alt="" />'+
+                                // '</div>' +
+                                // '<div class="altimeter_hand10000 box">'+
+                                //     '<img src="' +
+                                //     settings.img_directory +
+                                //     'altimeter_hand_10000ft.svg" class="box" alt="" />'+
+                                // '</div>' +
+                                '<div class="altimeter_foreground box">'+
+                                    '<img src="' +
+                                    settings.img_directory + model +
+                                    '_altitude_markings.png" class="box" alt="" />'+
+                                '</div>' +
+                                '<div class="altimeter_hand1000 box">'+
+                                    '<img src="' +
+                                    settings.img_directory + model +
+                                    '_hand_1000m.png" class="box" alt="" />'+
+                                '</div>' +
+                                '<div class="altimeter_hand100 box">'+
+                                    '<img src="' +
+                                    settings.img_directory + model +
+                                    '_hand.png" class="box" alt="" />'+
+                                '</div>' +
+                            '</div>' +
+                            '<div class="indicator_foreground">'+
+                                '<img src="' +
+                                settings.img_directory +
+                                'indicator_foreground.svg" class="box" alt="" />'+
+                            '</div>' +
+                        '</div>'
                     );
                     _setAltitude(settings.altitude);
                     _setPressure(settings.pressure);
@@ -502,10 +544,23 @@ Published under GPLv3 License.
                             settings.img_directory +
                             'vario_hand.svg" class="box" alt="" /></div></div><div class="indicator_foreground"><img src="' +
                             settings.img_directory +
+                            'indicator_foreground.svg" class="box" alt="" /></div></div>'+
+                            '<div class="instrument vario"><div class="indicator_background"><img src="' +
+                            settings.img_directory +
+                            'indicator_background_dashboard.svg" class="box" alt="" /></div><div class="indicator_background_screws"><img src="' +
+                            settings.img_directory +
+                            'indicator_background_screws.svg" class="box" alt="" /></div><div class="indicator_inner"><div class="vario_markings"><img src="' +
+                            settings.img_directory +
+                            'vario_markings.svg" class="box" alt="" /></div><div class="vario_hand box"><img src="' +
+                            settings.img_directory +
+                            'vario_hand.svg" class="box" alt="" /></div></div><div class="indicator_foreground"><img src="' +
+                            settings.img_directory +
                             'indicator_foreground.svg" class="box" alt="" /></div></div>'
                     );
                     _setVario(settings.vario);
                     break;
+                    
+                    
 
                 default:
                     built = false;

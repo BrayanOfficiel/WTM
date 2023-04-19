@@ -1,0 +1,21 @@
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<defs>
+		<radialGradient cx="49.9999859%" cy="50.0000211%" fx="49.9999859%" fy="50.0000211%" r="51.9984059%" gradientTransform="translate(0.500000,0.500000),scale(0.999980,1.000000),translate(-0.500000,-0.500000)" id="radialGradient--mkpjih7kg-1">
+			<stop stop-color="#BCB8AE" offset="0%"></stop>
+			<stop stop-color="#312F2F" offset="100%"></stop>
+		</radialGradient>
+		<radialGradient cx="49.9999944%" cy="50.0000329%" fx="49.9999944%" fy="50.0000329%" r="52.5416216%" gradientTransform="translate(0.500000,0.500000),scale(0.999980,1.000000),rotate(-52.456115),translate(-0.500000,-0.500000)" id="radialGradient--mkpjih7kg-2">
+			<stop stop-color="#BCB8AE" offset="0%"></stop>
+			<stop stop-color="#302F2D" offset="100%"></stop>
+		</radialGradient>
+	</defs>
+	<g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+		<g id="instrument_panel_work" transform="translate(-10.000000, -56.699840)" fill-rule="nonzero">
+			<g id="g5142" transform="translate(10.573011, 57.805005)">
+				<ellipse id="path6294-2" stroke="#000000" stroke-width="0.54999991" fill="url(#radialGradient--mkpjih7kg-1)" cx="19.2321396" cy="19.2317466" rx="19.2321396" ry="19.2317466"></ellipse>
+				<ellipse id="path6294-2-47" stroke="#2C2B29" stroke-width="0.5" fill="url(#radialGradient--mkpjih7kg-2)" cx="19.2328756" cy="19.2309946" rx="13.4806329" ry="13.4803573"></ellipse>
+				<polygon id="rect6224-42" fill="#000000" points="24.6123385 10.5196343 18.9028256 15.1823254 12.203071 12.095904 10.6932293 13.9955996 14.4184545 19.0945546 11.959001 26.4401391 13.8548946 27.9469048 19.5237355 24.1072356 26.2641601 26.3706371 27.7740038 24.4709415 22.7581048 19.0075066 26.5082281 12.026398"></polygon>
+			</g>
+		</g>
+	</g>
+</svg>

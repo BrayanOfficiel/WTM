@@ -1,0 +1,378 @@
+﻿/* 
+Skyhawk Flight Instruments (https://github.com/uw-ray/Skyhawk-Flight-Instruments)
+By Edward Hanna (edward.hanna@senecacollege.ca) and Raymond Blaga (raymond.blaga@gmail.com)
+
+Forked from jQuery Flight Indicators (https://github.com/sebmatton/jQuery-Flight-Indicators)
+By Sébastien Matton (seb_matton@hotmail.com)
+
+Published under GPLv3 License.
+*/
+
+/* Global block of an indicator*/
+
+@font-face {
+  font-family: 'Digital Numbers Regular';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Digital Numbers Regular'), url('DigitalNumbers-Regular.woff') format('woff');
+}
+
+#host {
+  position: absolute;
+  left: calc(5% + 30px);
+  top: 5%;
+  border-radius: 10px;
+  border: 1px solid #000;
+  color: white;
+  background: linear-gradient(45deg, rgba(0, 0, 0, 1) 0%, rgba(78, 78, 78, 1) 50%, rgba(0, 0, 0, 1) 100%);
+  padding: 10px;
+  text-align: center;
+  height: 40px;
+  z-index: 2;
+}
+
+.skin_sel,
+.skin_sel * {
+  border-radius: 30px;
+  border: 2px solid #000;
+  color: white;
+  background: #444547;
+  padding: 10px;
+  text-align: center;
+}
+
+.g_div {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  font-size: 36px;
+  align-items: center;
+  margin-left: 5px;
+}
+
+.g_div * {
+  margin-left: 10px;
+}
+
+.g_div:first-child {
+  margin-left: 0;
+}
+
+.led {
+  margin-right: 5px;
+  font-size: 1em;
+  box-sizing: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.75);
+  margin: 0;
+  position: relative;
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  background: #ff4500;
+  border-radius: 50%;
+  vertical-align: text-bottom;
+  box-shadow: inset 0.25em 0.25em 0.25em rgba(255, 255, 255, 0.25),
+    inset -0.25em -0.25em 0.25em 0.5em rgba(0, 0, 0, 0.25),
+    inset 1em 0.5em 0.5em rgba(0, 0, 0, 0.5);
+}
+
+.led:before {
+  content: "";
+  border-radius: 50%;
+  display: block;
+  width: 0.25em;
+  height: 0.25em;
+  background: #444547;
+  opacity: 0.1;
+  margin-top: 0.2em;
+  margin-left: 0.2em;
+  mix-blend-mode: overlay;
+}
+
+.led.on {
+  box-shadow: 0 0 0.25em 0.1em, 0 0 1em 0.5em;
+  border: 2px solid rgba(0, 0, 0, 0.05);
+  background: #ff4500;
+  color: #ff4500;
+}
+
+.led.on.blink {
+  -webkit-animation: blink 0.5s infinite;
+  -moz-animation: blink 0.5s infinite;
+  -o-animation: blink 0.5s infinite;
+  animation: blink 0.5s infinite;
+}
+
+
+@keyframes blink {
+  0% {
+    border: 1px solid rgba(0, 0, 0, 0.75);
+    box-shadow: inset 0.25em 0.25em 0.25em rgba(255, 255, 255, 0.25),
+      inset -0.25em -0.25em 0.25em 0.5em rgba(0, 0, 0, 0.25),
+      inset 1em 0.5em 0.5em rgba(0, 0, 0, 0.5);
+  }
+
+  50% {
+    border: 2px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 0.25em 0.1em, 0 0 1em 0.5em;
+  }
+
+  100% {
+    border: 1px solid rgba(0, 0, 0, 0.75);
+    box-shadow: inset 0.25em 0.25em 0.25em rgba(255, 255, 255, 0.25),
+      inset -0.25em -0.25em 0.25em 0.5em rgba(0, 0, 0, 0.25),
+      inset 1em 0.5em 0.5em rgba(0, 0, 0, 0.5);
+  }
+}
+
+div.instrument {
+  position: relative;
+  display: inline-block;
+}
+
+.instruments {
+  width: 100%;
+}
+
+/* The box containing any element of an indicator */
+div.instrument .box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Default transformations */
+
+div.instrument.attitude div.roll {
+  transform: rotate(0deg);
+}
+
+div.instrument.attitude div.roll div.pitch {
+  top: 0%;
+}
+
+div.instrument.heading div.yaw {
+  transform: rotate(0deg);
+}
+
+div.instrument.vario div.vario {
+  transform: rotate(0deg);
+}
+
+div.instrument.speed div.airspeed {
+  transform: rotate(90deg);
+}
+
+div.instrument.altimeter div.pressure {
+  transform: rotate(40deg);
+}
+
+div.instrument.altimeter div.needle {
+  transform: rotate(90deg);
+}
+
+div.instrument.altimeter div.needleSmall {
+  transform: rotate(90deg);
+}
+
+body {
+  min-width: 480px;
+  min-height: 256px;
+}
+
+.dashboard_main {
+  width: 100vw;
+  height: 100vh;
+  background: #09a39b;
+}
+
+.vis {
+  position: absolute;
+}
+
+.vis1 {
+  top: 5%;
+  left: 3%;
+}
+
+.vis2 {
+  top: 50%;
+  margin-top: -20px;
+  left: 3%;
+}
+
+.vis3 {
+  bottom: 5%;
+  margin-top: -20px;
+  left: 3%;
+}
+
+.vis4 {
+  top: 5%;
+  right: 3%;
+}
+
+.vis5 {
+  top: 50%;
+  margin-top: -20px;
+  right: 3%;
+}
+
+.vis6 {
+  bottom: 5%;
+  margin-top: -20px;
+  right: 3%;
+}
+
+.warning_panel {
+  width: 260px;
+  height: 360px;
+  top: 5%;
+  right: calc(5% + 30px);
+  justify-content: space-between;
+  align-content: space-evenly;
+  background: rgb(0, 0, 0);
+  background: linear-gradient(45deg, rgba(0, 0, 0, 1) 0%, rgba(78, 78, 78, 1) 50%, rgba(0, 0, 0, 1) 100%);
+  border: 1px solid #000;
+  border-radius: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  color: white;
+  padding: 1%;
+  margin: auto;
+}
+
+
+.panel_el {
+  margin-right: 5px;
+  font-size: .7em;
+  box-sizing: border-box;
+  width: 49.5%;
+  height: 19%;
+  border: 1px solid rgba(0, 0, 0, 0.75);
+  margin: 0;
+  position: relative;
+  display: inline-block;
+  background: #370e00;
+  border-radius: 5px;
+  align-items: center;
+  vertical-align: text-bottom;
+  color: #651a00;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0.25em 0.25em 0.25em rgba(255, 255, 255, 0.25),
+    inset -0.25em -0.25em 0.25em 0.5em rgba(0, 0, 0, 0.25),
+    inset 1em 0.5em 0.5em rgba(0, 0, 0, 0.5);
+}
+
+.panel_el.on {
+  box-shadow: 0 0 0.25em 0.1em, 0 0 1em 0.5em;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  background: radial-gradient(circle, rgba(255, 69, 0, 1) 34%, rgba(101, 26, 0, 1) 100%);
+  color: #651a00;
+  z-index: 4;
+}
+
+.panel_el b {
+  color: #ff4500;
+  text-shadow: 0 0 2px black, 0 0 2px black;
+}
+
+.panel_el.full {
+  width: 100%;
+}
+
+.panel_el.blink {
+  -webkit-animation: panel_blink .5s infinite;
+  -moz-animation: panel_blink .5s infinite;
+  -o-animation: panel_blink .5s infinite;
+  animation: panel_blink .5s infinite;
+}
+
+@keyframes panel_blink {
+  0% {
+    border: 1px solid rgba(0, 0, 0, 0.75);
+    box-shadow: inset 0.25em 0.25em 0.25em rgba(255, 255, 255, 0.25),
+      inset -0.25em -0.25em 0.25em 0.5em rgba(0, 0, 0, 0.25),
+      inset 1em 0.5em 0.5em rgba(0, 0, 0, 0.5);
+  }
+
+  50% {
+    border: 1px solid rgba(0, 0, 0, 0.402);
+    box-shadow: 0 0 0.25em 0.1em, 0 0 1em 0.5em;
+    background: radial-gradient(circle, rgba(255, 69, 0, 1) 34%, rgba(101, 26, 0, 1) 100%);
+  }
+
+  100% {
+    border: 1px solid rgba(0, 0, 0, 0.75);
+    box-shadow: inset 0.25em 0.25em 0.25em rgba(255, 255, 255, 0.25),
+      inset -0.25em -0.25em 0.25em 0.5em rgba(0, 0, 0, 0.25),
+      inset 1em 0.5em 0.5em rgba(0, 0, 0, 0.5);
+  }
+}
+
+.instruments_main {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "i1 i2 pn"
+    "i3 i4 i5";
+  width: 100%;
+  height: 80%;
+  margin: auto;
+  padding: 10%;
+}
+
+.i1 {
+  grid-area: i1;
+}
+
+.i2 {
+  grid-area: i2;
+}
+
+.i3 {
+  grid-area: i3;
+}
+
+.i4 {
+  grid-area: i4;
+}
+
+.i5 {
+  grid-area: i5;
+}
+
+.instruments_main {}
+
+.clock {
+  width: 90%;
+  height: 80%;
+  background: rgba(69, 0, 0, 1);
+  text-align: center;
+  display: flex;
+  align-items: center;
+
+  color: red;
+  font-family: 'Digital Numbers Regular';
+  font-size: 30px;
+}
+
+.clock_bg {
+  position: absolute;
+  width: 90%;
+  height: 80%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  color: rgba(255, 0, 0, 0.07);
+  font-family: 'Digital Numbers Regular';
+  font-size: 30px;
+}

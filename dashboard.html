@@ -12,7 +12,7 @@ Published under GPLv3 License.
 <meta charset="utf-8" />
 <html lang="en" dir="ltr">
     <head>
-        <title>War Thunder Meters (MiG-21 Model)</title>
+        <title>War Thunder Meters</title>
         <script src="js/jquery-1.11.3.js"></script>
         <script src="js/d3.min.js"></script>
         <script src="js/jquery.flightindicators.js"></script>
@@ -31,7 +31,7 @@ Published under GPLv3 License.
         </style>
     </head>
 
-    <body>
+    <body class="bg">
         <!-- <div style="text-align: left; color: white; font-size: 18px">
             Debug :
             <div id="debug_speed">Vitesse</div>
@@ -42,8 +42,17 @@ Published under GPLv3 License.
             <div id="debug_pressure">Pression</div>
         </div> -->
 
-        <input type="text" id="host" placeholder="Host (default: localhost)" />
-
+        <div style="display: flex; justify-content: space-evenly;align-items: center;">
+            <input type="text" id="host" placeholder="Host (default: localhost)" />
+            <div>
+                <select class="skin_sel" id="model">
+                    <option value="mig-21_s">Skin: Auto</option>
+                    <option value="mig-21_s">Skin: MiG-21S</option>
+                    <option value="">Skin: #2</option>
+                    <option value="">Skin: #3</option>
+                </select>
+            </div>
+        </div>
         <div class="instruments">
             <div class="g_div">
                 <i id="g_led"></i>
@@ -67,9 +76,17 @@ Published under GPLv3 License.
             var settings = {
                 off_flag: true,
                 size: 370,
-                showBox: false,
+                showBox: true,
                 showScrews: true,
+                model: model,
             };
+            
+            function onModelChange() {
+                var model = document.getElementById("model").value;
+                var settings = {
+                    model: model,
+                };
+            }
 
             var increment = 0;
             var increment_vario = 0;
@@ -108,9 +125,9 @@ Published under GPLv3 License.
                         var speed = data.speed * 3.6;
                         var altitude = data.altitude_hour;
                         var compass = data.compass;
-                        console.log(compass);
                         var pitch = -data.aviahorizon_pitch - 2;
-                        var roll = data.aviahorizon_roll - 2;
+                        var roll = data.aviahorizon_roll * -1 + 2;
+                        var yaw = data.bank / 8 + 0.5;
                         var gmeter = 0;
                         if (data.g_meter) var gmeter = data.g_meter;
                         var model = data.type;
@@ -149,6 +166,8 @@ Published under GPLv3 License.
                                 "white";
                             document.getElementById("g_led").className = "led";
                         }
+                        
+                        if
 
                         // Airspeed update
                         //airspeed.setAirSpeed(80 * Math.sin(increment/10));
@@ -168,8 +187,8 @@ Published under GPLv3 License.
 
                         // TC update - note that the TC appears opposite the angle of the attitude indicator, as it mirrors the actual wing up/down position
                         turn_coordinator.setTurn(roll * -1);
-                        ball_increment = (roll + 180) / 380;
-                        // console.log(ball_increment);
+                        console.log(yaw);
+                        ball_increment = yaw;
                         turn_coordinator.setSlip(ball_increment);
                         if (ball_increment <= 0) ball_right = true;
                         if (ball_increment >= 1) ball_right = false;
@@ -189,7 +208,6 @@ Published under GPLv3 License.
                     url: "http://" + host + ":8111/state",
                     success: function (data2) {
                         var vario = data2["AoA, deg"];
-                        console.log(vario);
                         // Vario update
                         if (increment_vario > 45) clockwise_vario = false;
                         if (increment_vario < -45) clockwise_vario = true;
